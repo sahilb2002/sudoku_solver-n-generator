@@ -1,8 +1,10 @@
 from cv2 import solve, sqrt
 from pysat.solvers import Solver
 from pysat.formula import CNF
+import pysat
 import numpy as np
 from time import time
+import random
 
 def add_number_constrain(sudoku_cnf,n,k):
     for s in range(n):
@@ -19,6 +21,9 @@ def add_row_constrain(sudoku_cnf,n,k):
             for s in range(n):
                 row = list(np.arange(i*k**4+m+s*k**6 , i*k**4+k**4+m+s*k**6 , k**2))
                 sudoku_cnf.append(row)
+                for j1 in range(k**2-1):
+                    for j2 in range(j1+1,k**2):
+                        sudoku_cnf.append([-(s*k**6 + (i*k**2+j1)*k**2 + m) , -(s*k**6 + (i*k**2+j2)*k**2 + m)])
 
 def add_column_constrain(sudoku_cnf,n,k):
     for r in range(k**2):
@@ -26,6 +31,9 @@ def add_column_constrain(sudoku_cnf,n,k):
             for s in range(n):
                 col = list(np.arange(r*k**2+m+s*k**6 , r*k**2+k**6+m+s*k**6 , k**4))
                 sudoku_cnf.append(col)
+                for i1 in range(k**2-1):
+                    for i2 in range(i1+1,k**2):
+                        sudoku_cnf.append([-(s*k**6 + (i1*k**2 + r)*k**2 + m) , -(s*k**6 + (i2*k**2 + r)*k**2 + m)])
 
 def add_grid_constrain(sudoku_cnf,n,k):
     for a in range(k):
@@ -36,6 +44,9 @@ def add_grid_constrain(sudoku_cnf,n,k):
                     for j in range(a*k**4+b*k**2 , a*k**4+b*k**2+k**4 , k**3):
                         grid = grid + list(np.arange(j*k+m+s*k**6 , j*k+k**3+m+s*k**6 , k**2))
                     sudoku_cnf.append(grid)
+                    for g1 in range(k-1):
+                        for g2 in range(g1+1,k):
+                            sudoku_cnf.append([-(s*k**6 + ((a*k+int(g1/k))*k**2 + b*k + g1%k)*k**2 + m ), -(s*k**6 + ((a*k+int(g2/k))*k**2 + b*k + g2%k)*k**2 + m)])
 
 def add_pair_constrain(sudoku_cnf,n,k):
     for r in range(k**4):
@@ -53,7 +64,7 @@ def add_basic_constrain(k,n):
     add_pair_constrain(sudoku_basic,n,k)
     return sudoku_basic
 
-def add_specific_constrain(n,k,sudokus,basic):
+def add_specific_constrain(n,k,sudokus,basic,specific):
     for s in range(n):
         for i in range(k**2):
             for j in range(k**2):
@@ -62,17 +73,22 @@ def add_specific_constrain(n,k,sudokus,basic):
                 if(m==0):
                     continue
                 basic.append([int(s*k**6 + r*k**2 + m)])
+    if(len(specific)!=0):
+        basic.append(specific)
     
-def solve_sudoku(n,k,sudokus):
+def solve_sudoku(n,k,sudokus,specific = []):
 
     # add constrains
 
-    print("adding constrains")
+    # print("adding constrains")
     sudoku_const = add_basic_constrain(k,n)
-    add_specific_constrain(n,k,sudokus,sudoku_const)
+    add_specific_constrain(n,k,sudokus,sudoku_const,specific)
     clausses = [[int(s) for s in sublist] for sublist in sudoku_const.clauses]
-    print("no. of clausses = ",len(clausses))
-    print("all contrain added!! Solving...")
+    # for sub in clausses:
+    #     random.shuffle(sub)
+    # random.shuffle(clausses)
+    # print("no. of clausses = ",len(clausses))
+    # print("all contrain added!! Solving...")
     
     # solve using a sat solver
     sudoku_solver = Solver("g3")
@@ -84,13 +100,16 @@ def solve_sudoku(n,k,sudokus):
 
 
     if(model==None):
-        print("No possible sollution :(")
-        print("Time taken = ",stop-start)
-        return False
-    else:
-        print("solved :)")
-        print("Time taken = ",stop-start)
+        # print("No possible sollution :(")
+        # print("Time taken = ",stop-start)
+        return (False,None)
+    # else:
+        # print("solved :)")
+        # print("Time taken = ",stop-start)
 
+    return (True,model)
+
+def fill_sudoku(n,k,sudokus,model):
     # fill incomplete sudoku
     for a in model:
         if(a<0):
@@ -101,8 +120,6 @@ def solve_sudoku(n,k,sudokus):
         row = int(r/k**2)
         col = r%k**2
         sudokus[s][row,col] = int(m)
-    return True
-    
 
 def print_mat(mat):
     c = len(mat)
@@ -115,7 +132,7 @@ def print_mat(mat):
         print()
 
 def take_input(file_name):
-    data = np.loadtxt(file_name,dtype=int,delimiter=",")
+    data = np.loadtxt(file_name,dtype=int)
     a,b = data.shape
     k = int(np.sqrt(b))
     n = int(a/(k**2))
@@ -126,13 +143,14 @@ def take_input(file_name):
     return (sudokus,n,k)
 
 def main():
-    file = "try4.txt"
+    file = "test_case6.txt"
     sudokus,n,k = take_input(file)
     print("before solving")
     print_mat(sudokus)
-    sol = solve_sudoku(n,k,sudokus)
-    if(sol):
+    check,sol = solve_sudoku(n,k,sudokus)
+    if(check):
+        fill_sudoku(n,k,sudokus,sol)
         print("After solving")
         print_mat(sudokus)
 
-main()                
+# main()
