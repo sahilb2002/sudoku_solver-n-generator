@@ -5,7 +5,7 @@ from time import time
 
 
 
-sudokus,n,k = take_input("test_cases/test_case2.txt")
+sudokus,n,k = take_input("test_cases/test_case8_25by25.txt")
 print("Given sudoku...")
 print_sudokus(sudokus)
 
