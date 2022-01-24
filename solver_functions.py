@@ -76,20 +76,23 @@ def add_specific_constrain(n,k,sudokus,basic,specific):
     if(len(specific)!=0):
         basic.append(specific)
     
-def solve_sudoku(n,k,sudokus,specific = []):
+def solve_sudoku(n,k,sudokus,specific = [],randomized=False,verbose=False):
 
     # add constrains
 
-    # print("adding constrains")
     sudoku_const = add_basic_constrain(k,n)
     add_specific_constrain(n,k,sudokus,sudoku_const,specific)
     clausses = [[int(s) for s in sublist] for sublist in sudoku_const.clauses]
-    # for sub in clausses:
-    #     random.shuffle(sub)
-    # random.shuffle(clausses)
-    # print("no. of clausses = ",len(clausses))
-    # print("all contrain added!! Solving...")
-    
+
+    if(randomized):
+        for sub in clausses:
+            random.shuffle(sub)
+        random.shuffle(clausses)
+
+    if(verbose):
+        print("no. of clausses = ",len(clausses))
+        print("all contrain added!! Solving...")
+        
     # solve using a sat solver
     sudoku_solver = Solver("g3")
     sudoku_solver.append_formula(clausses,no_return=False)
@@ -100,12 +103,14 @@ def solve_sudoku(n,k,sudokus,specific = []):
 
 
     if(model==None):
-        # print("No possible sollution :(")
-        # print("Time taken = ",stop-start)
+        if(verbose):
+            print("No possible sollution :(")
+            print("Time taken = ",stop-start)
         return (False,None)
-    # else:
-        # print("solved :)")
-        # print("Time taken = ",stop-start)
+    
+    elif (verbose):
+        print("solved :)")
+        print("Time taken = ",stop-start)
 
     return (True,model)
 
@@ -120,37 +125,3 @@ def fill_sudoku(n,k,sudokus,model):
         row = int(r/k**2)
         col = r%k**2
         sudokus[s][row,col] = int(m)
-
-def print_mat(mat):
-    c = len(mat)
-    m,n = mat[0].shape
-    for s in range(c):
-        for i in range(m):
-            for j in range(n):
-                print(mat[s][i,j],end=" ")
-            print()
-        print()
-
-def take_input(file_name):
-    data = np.loadtxt(file_name,dtype=int)
-    a,b = data.shape
-    k = int(np.sqrt(b))
-    n = int(a/(k**2))
-    sudokus = []
-    for i in range(n):
-        sudokus.append(data[i*k**2:(i+1)*k**2,:])
-    print("no of sudokus given = ",len(sudokus))
-    return (sudokus,n,k)
-
-def main():
-    file = "test_case6.txt"
-    sudokus,n,k = take_input(file)
-    print("before solving")
-    print_mat(sudokus)
-    check,sol = solve_sudoku(n,k,sudokus)
-    if(check):
-        fill_sudoku(n,k,sudokus,sol)
-        print("After solving")
-        print_mat(sudokus)
-
-# main()
