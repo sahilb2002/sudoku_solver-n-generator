@@ -20,3 +20,15 @@ def take_input(file_name):
         sudokus.append(data[i*k**2:(i+1)*k**2,:])
     print("no of sudokus given = ",len(sudokus))
     return (sudokus,n,k)
+
+def fill_sudoku(n,k,sudokus,model):
+    # fill incomplete sudoku
+    for a in model:
+        if(a<0):
+            continue
+        s = int((a-1)/k**6)
+        r = int((a - s*k**6-1)/k**2)
+        m = a - s*k**6 - r*k**2
+        row = int(r/k**2)
+        col = r%k**2
+        sudokus[s][row,col] = int(m)

@@ -55,14 +55,14 @@ def add_pair_constrain(sudoku_cnf,n,k):
                 for s2 in range(s1+1,n):
                     sudoku_cnf.append([-(r*k**2 + m + s1*k**6) , -(r*k**2 + m + s2*k**6)])
 
-def add_basic_constrain(k,n):
-    sudoku_basic = CNF()
+def add_basic_constrain(k,n,sudoku_basic):
+    # sudoku_basic = CNF()
     add_number_constrain(sudoku_basic,n,k)
     add_row_constrain(sudoku_basic,n,k)
     add_column_constrain(sudoku_basic,n,k)
     add_grid_constrain(sudoku_basic,n,k)
     add_pair_constrain(sudoku_basic,n,k)
-    return sudoku_basic
+    # return sudoku_basic
 
 def add_specific_constrain(n,k,sudokus,basic,specific):
     for s in range(n):
@@ -76,13 +76,12 @@ def add_specific_constrain(n,k,sudokus,basic,specific):
     if(len(specific)!=0):
         basic.append(specific)
     
-def solve_sudoku(n,k,sudokus,specific = [],randomized=False,verbose=False):
+def solve_sudoku(n,k,sudokus,sudoku_const,specific = [],randomized=False,verbose=False):
 
     # add constrains
-
-    sudoku_const = add_basic_constrain(k,n)
     add_specific_constrain(n,k,sudokus,sudoku_const,specific)
-    clausses = [[int(s) for s in sublist] for sublist in sudoku_const.clauses]
+    # clausses = [[int(s) for s in sublist] for sublist in sudoku_const.clauses]
+    clausses = sudoku_const.clauses
 
     if(randomized):
         for sub in clausses:
@@ -94,9 +93,9 @@ def solve_sudoku(n,k,sudokus,specific = [],randomized=False,verbose=False):
         print("all contrain added!! Solving...")
         
     # solve using a sat solver
-    sudoku_solver = Solver("g3")
-    sudoku_solver.append_formula(clausses,no_return=False)
     start = time()
+    sudoku_solver = Solver("g3",bootstrap_with=clausses)   # this statement is alone taking too much time due to adding so many clauses...
+    # sudoku_solver.append_formula(clausses,no_return=False)
     sudoku_solver.solve()
     stop = time()
     model = sudoku_solver.get_model()
