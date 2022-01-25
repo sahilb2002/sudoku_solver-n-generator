@@ -1,7 +1,6 @@
 import numpy as np
 import random
-import pysat
-from solver_functions import *
+from solver_class import *
 from time import time
 from helper_functions import *
 
@@ -34,8 +33,8 @@ def generate_fully_filled(k,n):
 
     # randomly_fill_diag(sudokus[0],k,0)
     # randomly_fill_diag(sudokus[1],k,1)
-
-    ch,sol = solve_sudoku(n,k,sudokus,randomized=True)
+    fully_filled = sudoku_solver(n,k,randomized=True)
+    ch,sol = fully_filled.solve(sudokus)
     if(ch):
         # print_mat(sudokus)
         fill_sudoku(n,k,sudokus,sol)
@@ -70,13 +69,13 @@ def restore_mistake(n,k,sudokus,remove,removed,to_be_checked):
         s,r,c = get_index(k,a,n)
         sudokus[s][r,c] = m
 
-def remove_1_num(n,k,sudokus,to_be_checked,removed,cant_remove):
+def remove_1_num(n,k,sudokus,s_solver,to_be_checked,removed,cant_remove):
     a = to_be_checked.pop(0)
     s,r,c = get_index(k,a,n)
     m = int(sudokus[s][r,c])
     removed.append(-(a*(k**2)+m))
     sudokus[s][r,c] = 0
-    check,sol = solve_sudoku(n,k,sudokus,specific = removed)
+    check,sol = s_solver.solve(sudokus)
     if(check):
         sudokus[s][r,c] = m
         removed.pop()
@@ -88,28 +87,30 @@ def remove_nums(n,k,sudokus):
     removed = []
     cant_remove = []
     i=1
+    s_solver = sudoku_solver(n,k)
+    s_solver.add_unique_sol_constrain(sudokus)
 
     while len(to_be_cheked)!=0:
         print("\rNo of entries checked = ",n*k**4-len(to_be_cheked)," out of ",n*k**4,", entries removed = ",len(removed),end="")
 
         if(len(to_be_cheked)>(n*k**4/2 + k**2)):
             rem = remove_k2_nums(n,k,sudokus,to_be_cheked,removed)
-            ch,sol = solve_sudoku(n,k,sudokus,removed)
+            ch,sol = s_solver.solve(sudokus)
 
             if(ch):
                 print("\nextra entries removed. restoring mistake...")
                 restore_mistake(n,k,sudokus,rem,removed,to_be_cheked)
                 for i in range(k**2):
-                    remove_1_num(n,k,sudokus,to_be_cheked,removed,cant_remove)
+                    remove_1_num(n,k,sudokus,s_solver,to_be_cheked,removed,cant_remove)
         
         else:
-            remove_1_num(n,k,sudokus,to_be_cheked,removed,cant_remove)
+            remove_1_num(n,k,sudokus,s_solver,to_be_cheked,removed,cant_remove)
 
-    print("\nno of entries removed = ",len(removed))
+    print("\nTotal no of entries removed = ",len(removed))
         
 def main():
-    n=1
-    k=5
+    n=4
+    k=4
     start = time()
     sudokus = generate_fully_filled(k,n)
     stop = time()
