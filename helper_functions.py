@@ -5,9 +5,16 @@ def print_sudokus(mat):
     m,n = mat[0].shape
     for s in range(c):
         for i in range(m):
+            if i!=0 and i*i%m==0:
+                for j in range((2*m)+4):
+                    print(end="-")
+                print()
             for j in range(n):
+                if j!=0 and j*j%n==0:
+                    print(end="| ")
                 print(mat[s][i,j],end=" ")
             print()
+            
         print()
 
 def take_input(file_name):

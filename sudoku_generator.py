@@ -109,8 +109,8 @@ def remove_nums(n,k,sudokus):
     print("\nTotal no of entries removed = ",len(removed))
         
 def main():
-    n=4
-    k=4
+    n=2
+    k=3
     start = time()
     sudokus = generate_fully_filled(k,n)
     stop = time()
