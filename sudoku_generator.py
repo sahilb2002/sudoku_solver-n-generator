@@ -110,7 +110,7 @@ def remove_nums(n,k,sudokus):
         
 def main():
     n=2
-    k=3
+    k=4
     start = time()
     sudokus = generate_fully_filled(k,n)
     stop = time()
@@ -122,5 +122,5 @@ def main():
     stop = time()
     print_sudokus(sudokus)
     print("time taken = ",stop-start)
-
+    print_csv(sudokus)
 main()

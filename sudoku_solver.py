@@ -4,7 +4,7 @@ from time import time
 from solver_class import *
 
 
-sudokus,n,k = take_input("test_cases/test_case2.txt")
+sudokus,n,k = take_input("test_cases/test_case6.txt")
 print("Given sudoku...")
 print_sudokus(sudokus)
 
@@ -14,3 +14,4 @@ check,sol = solve1.solve(sudokus,verbose = True)
 if(check):
     fill_sudoku(n,k,sudokus,sol)
     print_sudokus(sudokus)
+    print_csv(sudokus)
