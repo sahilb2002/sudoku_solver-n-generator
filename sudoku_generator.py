@@ -1,8 +1,9 @@
 import numpy as np
 import random
-from solver_class import *
+from include.solver_class import *
 from time import time
-from helper_functions import *
+from include.common_functions import *
+from sys import argv
 
 # def randomly_fill_diag(sudoku,k,diag=0):
 #     grids = np.random.permutation(k)
@@ -30,6 +31,7 @@ def generate_fully_filled(k,n):
     sudokus = []
     for i in range(n):
         sudokus.append(np.zeros([k**2,k**2],dtype=int))
+    
 
     # randomly_fill_diag(sudokus[0],k,0)
     # randomly_fill_diag(sudokus[1],k,1)
@@ -108,13 +110,15 @@ def remove_nums(n,k,sudokus):
 
     print("\nTotal no of entries removed = ",len(removed))
         
-def main():
-    n=2
-    k=4
+def main(argv):
+    n = 2
+    k = int(argv[1])
+    if len(argv)==3:
+        n = int(argv[2])
     start = time()
     sudokus = generate_fully_filled(k,n)
     stop = time()
-    print("generated sudoku..")
+    print("generated fully filled sudoku..")
     print_sudokus(sudokus)
     print("time taken to generate this = ",stop-start)
     start = time()
@@ -123,4 +127,6 @@ def main():
     print_sudokus(sudokus)
     print("time taken = ",stop-start)
     print_csv(sudokus)
-main()
+
+assert(len(argv)==2 or len(argv)==3), "Usage: python sudoku_generator.py k n \n n is optional default is 2."
+main(argv)

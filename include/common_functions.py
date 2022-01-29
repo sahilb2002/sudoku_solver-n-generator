@@ -14,7 +14,9 @@ def print_sudokus(mat):
             for j in range(n):
                 if j!=0 and j*j%n==0:
                     print(end="|")
-                if(mat[s][i,j]<10):
+                if(mat[s][i,j]==0):
+                    print(" .",end=" ")
+                elif(mat[s][i,j]<10):
                    print("",mat[s][i,j],end=" ")
                 else:
                     print(mat[s][i,j],end=" ")

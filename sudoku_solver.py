@@ -1,10 +1,12 @@
-from helper_functions import *
+from asyncio import exceptions
+from include.common_functions import *
 import numpy as np
 from time import time
-from solver_class import *
+from include.solver_class import *
+from sys import argv
 
-
-sudokus,n,k = take_input("test_cases/test_case6.txt")
+assert(len(argv)==2), "Usage: python sudoku_solver.py path/to/file_containing_sudoku.csv"
+sudokus,n,k = take_input(argv[1])
 print("Given sudoku...")
 print_sudokus(sudokus)
 

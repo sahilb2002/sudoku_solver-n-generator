@@ -15,7 +15,6 @@ class sudoku_solver:
         self.sudoku_const = CNF()
         self.add_basic_constrain()
         clausses = [[int(s) for s in sublist] for sublist in self.sudoku_const.clauses]
-
         if(randomized):
             for sub in clausses:
                 random.shuffle(sub)
@@ -108,8 +107,6 @@ class sudoku_solver:
         return specific
     
     def add_unique_sol_constrain(self,sudokus):
-        k = self.k
-        n = self.n
         uniquness = self.get_specific_constrain(sudokus,a=-1)
         self.solver.add_clause(uniquness)
     
@@ -117,6 +114,8 @@ class sudoku_solver:
 
         specific = self.get_specific_constrain(sudokus)
 
+        if(verbose):
+            print("Starting solving...")
         start = time()
         self.solver.solve(assumptions=specific)
         stop = time()
