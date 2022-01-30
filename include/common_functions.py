@@ -25,11 +25,11 @@ def print_sudokus(mat):
             
         print('\n')
 
-def print_csv(mat):
+def print_csv(mat,file_name):
     c=len(mat)
     m, n =mat[0].shape
     
-    f=open("output.csv", 'w', newline='')
+    f=open(file_name, 'w', newline='')
     write = csv.writer(f)
     for s in range(c):
         write.writerows(mat[s])
@@ -40,7 +40,7 @@ def print_csv(mat):
    
 
 def take_input(file_name):
-    data = np.loadtxt(file_name,dtype=int)
+    data = np.loadtxt(file_name,dtype=int,delimiter=",")
     a,b = data.shape
     k = int(np.sqrt(b))
     n = int(a/(k**2))
@@ -66,7 +66,6 @@ def valid_pair(mat):
     c=len(mat)
     m, n =mat[0].shape
     k = int(np.sqrt(m))
-    #f=open('output.csv', 'w')
     for s1 in range(c-1):
         for s2 in range(s1+1, c):
             for i in range(m):

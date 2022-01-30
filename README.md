@@ -116,7 +116,31 @@ If a solution exists add this entry back to sudoku (removing this entry would cr
 </ol>
 
 #### Generating fully filled sudoku
-to be filled...
+To generate a random filled sudoku we use the following strategy-
+
+<ol>
+<li>
+Take a random permutation of [1,k<sup>2</sup>] and place it in 1st row.</li>
+<li>
+Rotate this list by k and place in 2nd row.<br>
+Rotate 2nd row by k and place in 3rd row and so on fill first k rows.
+</li>
+<li>
+Now rotate 1st row by 1 and place in k+1 <sup>th</sup> row. <br>
+Repeat step 2 to fill next k rows
+</li>
+<li> and so on ... </li>
+</ol>
+Than we split the sudoku along rows (columns) at interval of k into k rectanges, so that subgrids are not affected, and shuffle them, also we shuffle the rows(columns) in each rectangles.
+
+We keep the other sudokus blank. And than give this tuple(of which 1st is filled, rest are empty) to our solver to solve.
+
+We observed that on shuffling the clauses fed to solver it gives a different solution every time, so we shuffle the clauses to get different tuple of sudoku even if the 1st sudoku is same.
+
+#### Improving step 3 of sudoku generation:
+To make sudoku generation faster we think of this stategy-
+
+Since when we begin to remove entries, most of the entries have high probability of getting removed. So instead of removing 1 by 1 we remove k<sup>2</sup> entries at once (till about half the entries are checked). If after that we find that uniqueness is destroyed, we restore the mistake by adding those entries back and removing them 1 by 1.
 
 ### **Code Structure**
 The include folder contains two files- <br>
@@ -137,3 +161,8 @@ The file **sudoku_generator.py** contains code for generating sudoku and can be 
 python3 sudoku_generator.py k n
 ```
 The argument n is optional, its default value is 2. 
+
+### **Testing**
+We have made a function in include/common_functions.py to check validity of a tuple of sudokus, it is used to check correctness of our solver.
+
+We have provided 10 test cases in test_cases folder, which contains different numbers of partially filled sudokus of different sizes, these can be used to test solver.

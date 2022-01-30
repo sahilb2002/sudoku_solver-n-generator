@@ -40,7 +40,6 @@ def generate_fully_filled(k,n):
         all_rows[i] = all_rows[i][np.random.permutation(all_rows[i].shape[0]),:]
     sudokus[0][:,:] = np.copy(np.vstack(all_rows))
 
-    print("part 1 done")
     fully_filled = sudoku_solver(n,k,randomized=True)
     ch,sol = fully_filled.solve(sudokus)
     if(ch):
@@ -121,26 +120,24 @@ def main(argv):
     k = int(argv[1])
     if len(argv)==3:
         n = int(argv[2])
+
     start = time()
     sudokus = generate_fully_filled(k,n)
     stop = time()
     print("generated fully filled sudoku..")
     print_sudokus(sudokus)
     print("time taken to generate this = ",stop-start)
-    start = time()
-    remove_nums(n,k,sudokus)
-    stop = time()
-    print_sudokus(sudokus)
-    print_csv(sudokus)
-    f=open('output.csv', 'a',newline='')
     if(valid_pair(sudokus)):
-        print("Sudoku Pair is a valid pair")
-        print("Sudoku Pair is a valid pair", file=f)
-    else:
-        print("Sudoku Pair is not a valid pair")
-        print("Sudoku Pair is not a valid pair", file=f)
-    print("time taken = ",stop-start)
-    print_csv(sudokus)
+        print("Generated pair is valid")
+    start1 = time()
+    remove_nums(n,k,sudokus)
+    stop1 = time()
+    print_sudokus(sudokus)
+    print("time taken to remove entries = ",stop1-start1)
+    print("Total time = ",stop1-start)
+    file = input("Enter file name to save sudokus to (press enter if you dont want to save) > ")
+    if(len(file)!=0):
+        print_csv(sudokus,file)
 
 assert(len(argv)==2 or len(argv)==3), "Usage: python sudoku_generator.py k n \n n is optional default is 2."
 main(argv)
