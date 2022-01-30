@@ -110,7 +110,7 @@ def remove_nums(n,k,sudokus):
         
 def main():
     n=2
-    k=4
+    k=3
     start = time()
     sudokus = generate_fully_filled(k,n)
     stop = time()
@@ -121,6 +121,14 @@ def main():
     remove_nums(n,k,sudokus)
     stop = time()
     print_sudokus(sudokus)
+    print_csv(sudokus)
+    f=open('output.csv', 'a',newline='')
+    if(valid_pair(sudokus)):
+        print("Sudoku Pair is a valid pair")
+        print("Sudoku Pair is a valid pair", file=f)
+    else:
+        print("Sudoku Pair is not a valid pair")
+        print("Sudoku Pair is not a valid pair", file=f)
     print("time taken = ",stop-start)
     print_csv(sudokus)
 main()
