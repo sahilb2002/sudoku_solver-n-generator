@@ -4,27 +4,7 @@ from include.solver_class import *
 from time import time
 from include.common_functions import *
 from sys import argv
-
-# def randomly_fill_diag(sudoku,k,diag=0):
-#     grids = np.random.permutation(k)
-#     rows = np.random.permutation(k)
-#     cols = np.random.permutation(k)
-
-#     for r in grids:
-#         available_nos = list(np.random.permutation(np.arange(1,k**2+1)))
-#         start_col = 0
-#         start_row = 0
-#         if(diag==0):
-#             start_row = r*k
-#             start_col = r*k
-#         else:
-#             start_row = r*k
-#             start_col = k**2 - r*k - k
-#         for i in rows:
-#             for j in cols:
-#                 sudoku[start_row+i,start_col+j] = available_nos.pop(0)
                 
-
 
 def generate_fully_filled(k,n):
 
@@ -32,9 +12,35 @@ def generate_fully_filled(k,n):
     for i in range(n):
         sudokus.append(np.zeros([k**2,k**2],dtype=int))
     
+    # Create a valid sudoku 
+    per = list(np.random.permutation(np.arange(1,k**2+1)))
+    tmp = list(np.copy(per))
+    for i in range(k):
+        tmp = per[i:] + per[:i]
+        sudokus[0][i*k,:] = np.copy(tmp)
+        for j in range(1,k):
+            tmp = tmp[k:] + tmp[:k]
+            sudokus[0][i*k+j,:] = np.copy(tmp)
 
-    # randomly_fill_diag(sudokus[0],k,0)
-    # randomly_fill_diag(sudokus[1],k,1)
+    # Shuffle its columns in set of k.
+    all_cols = []
+    for j in range(k):
+        all_cols.append(np.copy(sudokus[0][:,j*k:j*k+k]))
+    random.shuffle(all_cols)
+    for i in range(k):
+        all_cols[i] = all_cols[i][:,np.random.permutation(all_cols[i].shape[1])]
+    sudokus[0][:,:] = np.copy(np.hstack(all_cols))
+
+    # shuffle its rows in set of k.
+    all_rows = []
+    for i in range(k):
+        all_rows.append(sudokus[0][i*k:i*k+k,:])
+    random.shuffle(all_rows)
+    for i in range(k):
+        all_rows[i] = all_rows[i][np.random.permutation(all_rows[i].shape[0]),:]
+    sudokus[0][:,:] = np.copy(np.vstack(all_rows))
+
+    print("part 1 done")
     fully_filled = sudoku_solver(n,k,randomized=True)
     ch,sol = fully_filled.solve(sudokus)
     if(ch):
