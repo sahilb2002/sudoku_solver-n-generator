@@ -17,3 +17,13 @@ if(check):
     fill_sudoku(n,k,sudokus,sol)
     print_sudokus(sudokus)
     print_csv(sudokus)
+
+f=open('output.csv', 'a',newline='')
+if(not check):
+    print_csv(sudokus)
+if(valid_pair(sudokus)):
+    print("Sudoku Pair is a valid pair")
+    print("Sudoku Pair is a valid pair", file=f)
+else:
+    print("Sudoku Pair is not a valid pair")
+    print("Sudoku Pair is not a valid pair", file=f)

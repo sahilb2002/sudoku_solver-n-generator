@@ -1,3 +1,4 @@
+from random import sample
 import numpy as np
 import pandas as pd
 import csv
@@ -27,24 +28,16 @@ def print_sudokus(mat):
 def print_csv(mat):
     c=len(mat)
     m, n =mat[0].shape
-    f=open('output.csv', 'w')
+    
+    f=open("output.csv", 'w', newline='')
+    write = csv.writer(f)
     for s in range(c):
-        for i in range(m):
-            if i!=0 and i*i%m==0:
-                for j in range((3*m)+4):
-                    print(end="-", file=f)
-                print('', file=f)
-            for j in range(n):
-                if j!=0 and j*j%n==0:
-                    print(end="|", file=f)
-                if(mat[s][i,j]<10):
-                   print("",mat[s][i,j],end=" ", file=f)
-                else:
-                    print(mat[s][i,j],end=" ", file=f)
-            print('', file=f)
-            
-        print('\n', file=f)
+        write.writerows(mat[s])
+        print('', file=f)
+    
     f.close()
+
+   
 
 def take_input(file_name):
     data = np.loadtxt(file_name,dtype=int)
@@ -68,3 +61,38 @@ def fill_sudoku(n,k,sudokus,model):
         row = int(r/k**2)
         col = r%k**2
         sudokus[s][row,col] = int(m)
+
+def valid_pair(mat):
+    c=len(mat)
+    m, n =mat[0].shape
+    k = int(np.sqrt(m))
+    #f=open('output.csv', 'w')
+    for s1 in range(c-1):
+        for s2 in range(s1+1, c):
+            for i in range(m):
+                for j in range(n):
+                    if(mat[s1][i,j]==mat[s2][i,j]):
+                        return False
+    
+    for s in range(c):
+        for i in range(m):
+            if(len(set(mat[s][i]))!=n):
+                return False
+        
+        for i in range(n):
+            col=[item[i] for item in mat[s]]
+            if(len(set(col))!=m):
+                return False
+        
+        for i in range(0, m, k):
+            for j in range(0, n, k):
+                vals=mat[s][i][j:j+k]
+                for l in range (1, k):
+                    vals=np.append(vals,mat[s][i+l][j:j+k])
+                
+                if(len(set(vals))!=m):
+                    return False
+        
+    return True
+
+
