@@ -1,5 +1,5 @@
 # Sudoku Solver and Generator
-## **CS202 Assignment-1**
+## **CS202 Project**
 -Prof. Subhajit Roy 
 #### Submitted BY-
 Sahil Bansal <br> 200836
